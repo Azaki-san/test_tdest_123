@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+message SaveDataMessage {
+    string key = 1;
+    string text = 2;
+}
+
+message SaveDataResponse {
+    bool status = 1;
+    int32 node_id = 2;
+}
+
+message RemoveDataMessage {
+    string key = 1;
+}
+
+message RemoveDataResponse {
+    bool status = 1;
+    int32 node_id = 2;
+}
+
+message FindDataMessage {
+    string key = 1;
+}
+
+message FindDataResponse {
+    string data = 1;
+    int32 node_id = 2;
+}
+
+message GetFingerTableMessage {}
+
+message GetFingerTableResponse {
+  repeated int32 finger_table = 1;
+}
+
+service Chord {
+  rpc SaveData(SaveDataMessage) returns (SaveDataResponse) {}
+  rpc RemoveData(RemoveDataMessage) returns (RemoveDataResponse) {}
+  rpc FindData(FindDataMessage) returns (FindDataResponse) {}
+  rpc GetFingerTable(GetFingerTableMessage) returns (GetFingerTableResponse) {}
+}

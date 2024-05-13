@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>
+        Week 6 - Distributed Consensus
+    </title>
+    <link rel="icon" type="image/png" href="https://hackmd.io/favicon.png">
+    <link rel="apple-touch-icon" href="https://hackmd.io/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css" integrity="sha256-QiWfLIsCT02Sdwkogf6YMiQlj4NE84MKkzEMkZnMGdg=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css" integrity="sha256-vtR0hSWRc3Tb26iuN2oZHt3KRUomwTufNIf5/4oeCyg=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@hackmd/emojify.js@2.1.0/dist/css/basic/emojify.min.css" integrity="sha256-UOrvMOsSDSrW6szVLe8ZDZezBxh5IoIfgTwdNDgTjiU=" crossorigin="anonymous" />
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i|Source+Code+Pro:300,400,500|Source+Sans+Pro:300,300i,400,400i,600,600i|Source+Serif+Pro&subset=latin-ext);.hljs{background:#fff;color:#333;display:block;overflow-x:auto;padding:.5em}.hljs-comment,.hljs-meta{color:#969896}.hljs-emphasis,.hljs-quote,.hljs-string,.hljs-strong,.hljs-template-variable,.hljs-variable{color:#df5000}.hljs-keyword,.hljs-selector-tag,.hljs-type{color:#a71d5d}.hljs-attribute,.hljs-bullet,.hljs-literal,.hljs-number,.hljs-symbol{color:#0086b3}.hljs-built_in,.hljs-builtin-name{color:#005cc5}.hljs-name,.hljs-section{color:#63a35c}.hljs-tag{color:#333}.hljs-attr,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id,.hljs-selector-pseudo,.hljs-title{color:#795da3}.hljs-addition{background-color:#eaffea;color:#55a532}.hljs-deletion{background-color:#ffecec;color:#bd2c00}.hljs-link{text-decoration:underline}.markdown-body{word-wrap:break-word;font-size:16px;line-height:1.5}.markdown-body:after,.markdown-body:before{content:"";display:table}.markdown-body:after{clear:both}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a:not([href]){color:inherit;text-decoration:none}.markdown-body .absent{color:#c00}.markdown-body .anchor{float:left;line-height:1;margin-left:-20px;padding-right:4px}.markdown-body .anchor:focus{outline:none}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin-bottom:16px;margin-top:0}.markdown-body hr{background-color:#e7e7e7;border:0;height:.25em;margin:24px 0;padding:0}.markdown-body blockquote{border-left:.25em solid #ddd;color:#777;font-size:16px;padding:0 1em}.markdown-body blockquote>:first-child{margin-top:0}.markdown-body blockquote>:last-child{margin-bottom:0}.markdown-body kbd,.popover kbd{background-color:#fcfcfc;border:1px solid;border-color:#ccc #ccc #bbb;border-radius:3px;box-shadow:inset 0 -1px 0 #bbb;color:#555;display:inline-block;font-size:11px;line-height:10px;padding:3px 5px;vertical-align:middle}.markdown-body .loweralpha{list-style-type:lower-alpha}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{font-weight:600;line-height:1.25;margin-bottom:16px;margin-top:24px}.markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link{color:#000;vertical-align:middle;visibility:hidden}.markdown-body h1:hover .anchor,.markdown-body h2:hover .anchor,.markdown-body h3:hover .anchor,.markdown-body h4:hover .anchor,.markdown-body h5:hover .anchor,.markdown-body h6:hover .anchor{text-decoration:none}.markdown-body h1:hover .anchor .octicon-link,.markdown-body h2:hover .anchor .octicon-link,.markdown-body h3:hover .anchor .octicon-link,.markdown-body h4:hover .anchor .octicon-link,.markdown-body h5:hover .anchor .octicon-link,.markdown-body h6:hover .anchor .octicon-link{visibility:visible}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{font-size:2em}.markdown-body h1,.markdown-body h2{border-bottom:1px solid #eee;padding-bottom:.3em}.markdown-body h2{font-size:1.5em}.markdown-body h3{font-size:1.25em}.markdown-body h4{font-size:1em}.markdown-body h5{font-size:.875em}.markdown-body h6{color:#777;font-size:.85em}.markdown-body ol,.markdown-body ul{padding-left:2em}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0;margin-top:0}.markdown-body li>p{margin-top:16px}.markdown-body li+li{padding-top:.25em}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:1em;font-style:italic;font-weight:700;margin-top:16px;padding:0}.markdown-body dl dd{margin-bottom:16px;padding:0 16px}.markdown-body table{display:block;overflow:auto;width:100%;word-break:normal;word-break:keep-all}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #ddd;padding:6px 13px}.markdown-body table tr{background-color:#fff;border-top:1px solid #ccc}.markdown-body table tr:nth-child(2n){background-color:#f8f8f8}.markdown-body img{background-color:#fff;box-sizing:initial;max-width:100%}.markdown-body img[align=right]{padding-left:20px}.markdown-body img[align=left]{padding-right:20px}.markdown-body .emoji{background-color:initial;max-width:none;vertical-align:text-top}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #ddd;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#0000000a;border-radius:3px;font-size:85%;margin:0;padding:.2em 0}.markdown-body code:after,.markdown-body code:before,.markdown-body tt:after,.markdown-body tt:before{content:"\00a0";letter-spacing:-.2em}.markdown-body code br,.markdown-body tt br{display:none}.markdown-body del code{text-decoration:inherit}.markdown-body pre{word-wrap:normal}.markdown-body pre>code{background:#0000;border:0;font-size:100%;margin:0;padding:0;white-space:pre;word-break:normal}.markdown-body .highlight{margin-bottom:16px}.markdown-body .highlight pre{margin-bottom:0;word-break:normal}.markdown-body .highlight pre,.markdown-body pre{border-radius:3px;font-size:85%;line-height:1.45;overflow:auto}.markdown-body:not(.next-editor) pre{background-color:#f7f7f7;padding:16px}.markdown-body pre code,.markdown-body pre tt{word-wrap:normal;background-color:initial;border:0;display:inline;line-height:inherit;margin:0;max-width:auto;overflow:visible;padding:0}.markdown-body pre code:after,.markdown-body pre code:before,.markdown-body pre tt:after,.markdown-body pre tt:before{content:normal}.markdown-body .csv-data td,.markdown-body .csv-data th{font-size:12px;line-height:1;overflow:hidden;padding:5px;text-align:left;white-space:nowrap}.markdown-body .csv-data .blob-line-num{background:#fff;border:0;padding:10px 8px 9px;text-align:right}.markdown-body .csv-data tr{border-top:0}.markdown-body .csv-data th{background:#f8f8f8;border-top:0;font-weight:700}.news .alert .markdown-body blockquote{border:0;padding:0 0 0 40px}.activity-tab .news .alert .commits,.activity-tab .news .markdown-body blockquote{padding-left:0}.task-list-item{list-style-type:none}.task-list-item label{font-weight:400}.task-list-item.enabled label{cursor:pointer}.task-list-item+.task-list-item{margin-top:3px}.task-list-item-checkbox{cursor:default!important;float:left;margin:.31em 0 .2em -1.3em!important;vertical-align:middle}.markdown-body{max-width:758px;overflow:visible!important;padding-bottom:40px;padding-top:40px;position:relative}.markdown-body.next-editor{overflow-x:hidden!important}.markdown-body .emoji{vertical-align:top}.markdown-body pre{border:inherit!important}.markdown-body code{color:inherit!important}.markdown-body pre code .wrapper{display:-moz-inline-flex;display:-ms-inline-flex;display:-o-inline-flex;display:inline-flex}.markdown-body pre code .gutter{float:left;overflow:hidden;-webkit-user-select:none;user-select:none}.markdown-body pre code .gutter.linenumber{border-right:3px solid #6ce26c!important;box-sizing:initial;color:#afafaf!important;cursor:default;display:inline-block;min-width:20px;padding:0 8px 0 0;position:relative;text-align:right;z-index:4}.markdown-body pre code .gutter.linenumber>span:before{content:attr(data-linenumber)}.markdown-body pre code .code{float:left;margin:0 0 0 16px}.markdown-body .gist .line-numbers{border-bottom:none;border-left:none;border-top:none}.markdown-body .gist .line-data{border:none}.markdown-body .gist table{border-collapse:inherit!important;border-spacing:0}.markdown-body code[data-gist-id]{background:none;padding:0}.markdown-body code[data-gist-id]:after,.markdown-body code[data-gist-id]:before{content:""}.markdown-body code[data-gist-id] .blob-num{border:unset}.markdown-body code[data-gist-id] table{margin-bottom:unset;overflow:unset}.markdown-body code[data-gist-id] table tr{background:unset}.markdown-body[dir=rtl] pre{direction:ltr}.markdown-body[dir=rtl] code{direction:ltr;unicode-bidi:embed}.markdown-body .alert{display:flex;flex-direction:column;gap:16px}.markdown-body .alert>*{margin:0}.markdown-body pre.abc,.markdown-body pre.flow-chart,.markdown-body pre.graphviz,.markdown-body pre.mermaid,.markdown-body pre.sequence-diagram,.markdown-body pre.vega{background-color:inherit;border-radius:0;overflow:visible;text-align:center;white-space:inherit}.markdown-body pre.abc>code,.markdown-body pre.flow-chart>code,.markdown-body pre.graphviz>code,.markdown-body pre.mermaid>code,.markdown-body pre.sequence-diagram>code,.markdown-body pre.vega>code{text-align:left}.markdown-body pre.abc>svg,.markdown-body pre.flow-chart>svg,.markdown-body pre.graphviz>svg,.markdown-body pre.mermaid>svg,.markdown-body pre.sequence-diagram>svg,.markdown-body pre.vega>svg{height:100%;max-width:100%}.markdown-body pre>code.wrap{word-wrap:break-word;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap}.markdown-body summary{display:list-item}.markdown-body summary:focus{outline:none}.markdown-body details summary{cursor:pointer}.markdown-body details:not([open])>:not(summary){display:none}.markdown-body figure{margin:1em 40px}.markdown-body .mark,.markdown-body mark{background-color:#fff1a7}.vimeo,.youtube{background-color:#000;background-position:50%;background-repeat:no-repeat;background-size:contain;cursor:pointer;display:table;overflow:hidden;text-align:center}.vimeo,.youtube{position:relative;width:100%}.youtube{padding-bottom:56.25%}.vimeo img{object-fit:contain;width:100%;z-index:0}.youtube img{object-fit:cover;z-index:0}.vimeo iframe,.youtube iframe,.youtube img{height:100%;left:0;position:absolute;top:0;width:100%}.vimeo iframe,.youtube iframe{vertical-align:middle;z-index:1}.vimeo .icon,.youtube .icon{color:#fff;height:auto;left:50%;opacity:.3;position:absolute;top:50%;transform:translate(-50%,-50%);transition:opacity .2s;width:auto;z-index:0}.vimeo:hover .icon,.youtube:hover .icon{opacity:.6;transition:opacity .2s}.slideshare .inner,.speakerdeck .inner{position:relative;width:100%}.slideshare .inner iframe,.speakerdeck .inner iframe{bottom:0;height:100%;left:0;position:absolute;right:0;top:0;width:100%}.figma{display:table;padding-bottom:56.25%;position:relative;width:100%}.figma iframe{border:1px solid #eee;bottom:0;height:100%;left:0;position:absolute;right:0;top:0;width:100%}.markmap-container{height:300px}.markmap-container>svg{height:100%;width:100%}.MJX_Assistive_MathML{display:none}#MathJax_Message{z-index:1000!important}.ui-infobar{color:#777;margin:25px auto -25px;max-width:760px;position:relative;z-index:2}.toc .invisable-node{list-style-type:none}.ui-toc{bottom:20px;position:fixed;z-index:998}.ui-toc.both-mode{margin-left:8px}.ui-toc.both-mode .ui-toc-label{border-bottom-left-radius:0;border-top-left-radius:0;height:40px;padding:10px 4px}.ui-toc-label{background-color:#e6e6e6;border:none;color:#868686;transition:opacity .2s}.ui-toc .open .ui-toc-label{color:#fff;opacity:1;transition:opacity .2s}.ui-toc-label:focus{background-color:#ccc;color:#000;opacity:.3}.ui-toc-label:hover{background-color:#ccc;opacity:1;transition:opacity .2s}.ui-toc-dropdown{margin-bottom:20px;margin-top:20px;max-height:70vh;max-width:45vw;overflow:auto;padding-left:10px;padding-right:10px;text-align:inherit;width:25vw}.ui-toc-dropdown>.toc{max-height:calc(70vh - 100px);overflow:auto}.ui-toc-dropdown[dir=rtl] .nav{letter-spacing:.0029em;padding-right:0}.ui-toc-dropdown a{overflow:hidden;text-overflow:ellipsis;white-space:pre}.ui-toc-dropdown .nav>li>a{color:#767676;display:block;font-size:13px;font-weight:500;padding:4px 20px}.ui-toc-dropdown .nav>li:first-child:last-child>ul,.ui-toc-dropdown .toc.expand ul{display:block}.ui-toc-dropdown .nav>li>a:focus,.ui-toc-dropdown .nav>li>a:hover{background-color:initial;border-left:1px solid #000;color:#000;padding-left:19px;text-decoration:none}.ui-toc-dropdown[dir=rtl] .nav>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav>li>a:hover{border-left:none;border-right:1px solid #000;padding-right:19px}.ui-toc-dropdown .nav>.active:focus>a,.ui-toc-dropdown .nav>.active:hover>a,.ui-toc-dropdown .nav>.active>a{background-color:initial;border-left:2px solid #000;color:#000;font-weight:700;padding-left:18px}.ui-toc-dropdown[dir=rtl] .nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav>.active>a{border-left:none;border-right:2px solid #000;padding-right:18px}.ui-toc-dropdown .nav .nav{display:none;padding-bottom:10px}.ui-toc-dropdown .nav>.active>ul{display:block}.ui-toc-dropdown .nav .nav>li>a{font-size:12px;font-weight:400;padding-bottom:1px;padding-left:30px;padding-top:1px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>a{padding-right:30px}.ui-toc-dropdown .nav .nav>li>ul>li>a{font-size:12px;font-weight:400;padding-bottom:1px;padding-left:40px;padding-top:1px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a{padding-right:40px}.ui-toc-dropdown .nav .nav>li>a:focus,.ui-toc-dropdown .nav .nav>li>a:hover{padding-left:29px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav .nav>li>a:hover{padding-right:29px}.ui-toc-dropdown .nav .nav>li>ul>li>a:focus,.ui-toc-dropdown .nav .nav>li>ul>li>a:hover{padding-left:39px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a:hover{padding-right:39px}.ui-toc-dropdown .nav .nav>.active:focus>a,.ui-toc-dropdown .nav .nav>.active:hover>a,.ui-toc-dropdown .nav .nav>.active>a{font-weight:500;padding-left:28px}.ui-toc-dropdown[dir=rtl] .nav .nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>a{padding-right:28px}.ui-toc-dropdown .nav .nav>.active>.nav>.active:focus>a,.ui-toc-dropdown .nav .nav>.active>.nav>.active:hover>a,.ui-toc-dropdown .nav .nav>.active>.nav>.active>a{font-weight:500;padding-left:38px}.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active>a{padding-right:38px}.markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html[lang^=ja] .markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro W3,Osaka,Meiryo,メイリオ,MS Gothic,ＭＳ ゴシック,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html[lang=zh-tw] .markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,PingFang TC,Microsoft JhengHei,微軟正黑,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html[lang=zh-cn] .markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,PingFang SC,Microsoft YaHei,微软雅黑,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html .markdown-body[lang^=ja]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro W3,Osaka,Meiryo,メイリオ,MS Gothic,ＭＳ ゴシック,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html .markdown-body[lang=zh-tw]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,PingFang TC,Microsoft JhengHei,微軟正黑,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html .markdown-body[lang=zh-cn]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,Roboto,Arial,PingFang SC,Microsoft YaHei,微软雅黑,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}html[lang^=ja] .ui-toc-dropdown{font-family:Source Sans Pro,Helvetica,Arial,Meiryo UI,MS PGothic,ＭＳ Ｐゴシック,sans-serif}html[lang=zh-tw] .ui-toc-dropdown{font-family:Source Sans Pro,Helvetica,Arial,Microsoft JhengHei UI,微軟正黑UI,sans-serif}html[lang=zh-cn] .ui-toc-dropdown{font-family:Source Sans Pro,Helvetica,Arial,Microsoft YaHei UI,微软雅黑UI,sans-serif}html .ui-toc-dropdown[lang^=ja]{font-family:Source Sans Pro,Helvetica,Arial,Meiryo UI,MS PGothic,ＭＳ Ｐゴシック,sans-serif}html .ui-toc-dropdown[lang=zh-tw]{font-family:Source Sans Pro,Helvetica,Arial,Microsoft JhengHei UI,微軟正黑UI,sans-serif}html .ui-toc-dropdown[lang=zh-cn]{font-family:Source Sans Pro,Helvetica,Arial,Microsoft YaHei UI,微软雅黑UI,sans-serif}.ui-affix-toc{max-height:70vh;max-width:15vw;overflow:auto;position:fixed;top:0}.back-to-top,.expand-toggle,.go-to-bottom{color:#999;display:block;font-size:12px;font-weight:500;margin-left:10px;margin-top:10px;padding:4px 10px}.back-to-top:focus,.back-to-top:hover,.expand-toggle:focus,.expand-toggle:hover,.go-to-bottom:focus,.go-to-bottom:hover{color:#563d7c;text-decoration:none}.back-to-top,.go-to-bottom{margin-top:0}.ui-user-icon{background-position:50%;background-repeat:no-repeat;background-size:cover;border-radius:50%;display:block;height:20px;margin-bottom:2px;margin-right:5px;margin-top:2px;width:20px}.ui-user-icon.small{display:inline-block;height:18px;margin:0 0 .2em;vertical-align:middle;width:18px}.ui-infobar>small>span{line-height:22px}.ui-infobar>small .dropdown{display:inline-block}.ui-infobar>small .dropdown a:focus,.ui-infobar>small .dropdown a:hover{text-decoration:none}.ui-more-info{color:#888;cursor:pointer;vertical-align:middle}.ui-more-info .fa{font-size:16px}.ui-connectedGithub,.ui-published-note{color:#888}.ui-connectedGithub{line-height:23px;white-space:nowrap}.ui-connectedGithub a.file-path{color:#888;padding-left:22px;text-decoration:none}.ui-connectedGithub a.file-path:active,.ui-connectedGithub a.file-path:hover{color:#888;text-decoration:underline}.ui-connectedGithub .fa{font-size:20px}.ui-published-note .fa{font-size:20px;vertical-align:top}.unselectable{-webkit-user-select:none;-o-user-select:none;user-select:none}.selectable{-webkit-user-select:text;-o-user-select:text;user-select:text}.inline-spoiler-section{cursor:pointer}.inline-spoiler-section .spoiler-text{background-color:#333;border-radius:2px}.inline-spoiler-section .spoiler-text>*{opacity:0}.inline-spoiler-section .spoiler-img{filter:blur(10px)}.inline-spoiler-section.raw{background-color:#333;border-radius:2px}.inline-spoiler-section.raw>*{opacity:0}.inline-spoiler-section.unveil{cursor:auto}.inline-spoiler-section.unveil .spoiler-text{background-color:#3333331a}.inline-spoiler-section.unveil .spoiler-text>*{opacity:1}.inline-spoiler-section.unveil .spoiler-img{filter:none}@media print{blockquote,div,img,pre,table{page-break-inside:avoid!important}a[href]:after{font-size:12px!important}}.markdown-body.slides{color:#222;position:relative;z-index:1}.markdown-body.slides:before{background-color:currentColor;bottom:0;box-shadow:0 0 0 50vw;content:"";display:block;left:0;position:absolute;right:0;top:0;z-index:-1}.markdown-body.slides section[data-markdown]{background-color:#fff;margin-bottom:1.5em;position:relative;text-align:center}.markdown-body.slides section[data-markdown] code{text-align:left}.markdown-body.slides section[data-markdown]:before{content:"";display:block;padding-bottom:56.23%}.markdown-body.slides section[data-markdown]>div:first-child{left:1em;max-height:100%;overflow:hidden;position:absolute;right:1em;top:50%;transform:translateY(-50%)}.markdown-body.slides section[data-markdown]>ul{display:inline-block}.markdown-body.slides>section>section+section:after{border:3px solid #777;content:"";height:1.5em;position:absolute;right:1em;top:-1.5em}.site-ui-font{font-family:Source Sans Pro,Helvetica,Arial,sans-serif}html[lang^=ja] .site-ui-font{font-family:Source Sans Pro,Helvetica,Arial,Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro W3,Osaka,Meiryo,メイリオ,MS Gothic,ＭＳ ゴシック,sans-serif}html[lang=zh-tw] .site-ui-font{font-family:Source Sans Pro,Helvetica,Arial,PingFang TC,Microsoft JhengHei,微軟正黑,sans-serif}html[lang=zh-cn] .site-ui-font{font-family:Source Sans Pro,Helvetica,Arial,PingFang SC,Microsoft YaHei,微软雅黑,sans-serif}body{font-smoothing:subpixel-antialiased!important;-webkit-font-smoothing:subpixel-antialiased!important;-moz-osx-font-smoothing:auto!important;-webkit-overflow-scrolling:touch;font-family:Source Sans Pro,Helvetica,Arial,sans-serif;letter-spacing:.025em}html[lang^=ja] body{font-family:Source Sans Pro,Helvetica,Arial,Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro W3,Osaka,Meiryo,メイリオ,MS Gothic,ＭＳ ゴシック,sans-serif}html[lang=zh-tw] body{font-family:Source Sans Pro,Helvetica,Arial,PingFang TC,Microsoft JhengHei,微軟正黑,sans-serif}html[lang=zh-cn] body{font-family:Source Sans Pro,Helvetica,Arial,PingFang SC,Microsoft YaHei,微软雅黑,sans-serif}abbr[title]{border-bottom:none;text-decoration:underline;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}abbr[data-original-title],abbr[title]{cursor:help}body.modal-open{overflow-y:auto;padding-right:0!important}svg{text-shadow:none}
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha256-3Jy/GbSLrg0o9y5Z5n1uw0qxZECH7C6OQpVBgNFYa0g=" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js" integrity="sha256-g6iAfvZp+nDQ2TdTR/VVKJf3bGro4ub5fvWSWVRi2NE=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.min.js" integrity="sha256-8E4Is26QH0bD52WoQpcB+R/tcWQtpzlCojrybUd7Mxo=" crossorigin="anonymous"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div id="doc" class="markdown-body container-fluid comment-inner comment-enabled" data-hard-breaks="true"><h1 id="Week-6---Distributed-Consensus" data-id="Week-6---Distributed-Consensus"><a class="anchor hidden-xs" href="#Week-6---Distributed-Consensus" title="Week-6---Distributed-Consensus"><span class="octicon octicon-link"></span></a><span>Week 6 - Distributed Consensus</span></h1><blockquote>
+<p><span>Distributed and Networking Programming - Spring 2024</span></p>
+</blockquote><h2 id="Overview" data-id="Overview"><a class="anchor hidden-xs" href="#Overview" title="Overview"><span class="octicon octicon-link"></span></a><span>Overview</span></h2><p><span>In this lab, you will apply the knowledge gained from the first five labs to implement a simplified version of the RAFT consensus algorithm. Your implementation should match the functionality shown in the </span><a href="https://thesecretlivesofdata.com/raft/" target="_blank" rel="noopener"><span>RAFT Visualization</span></a><span>.</span></p><p><span>RAFT is a consensus algorithm used in peer-to-peer (P2P) clusters and is an alternative to the Paxos protocol, designed to ensure reliability, replication, and fault tolerance. For more detailed information, refer to the </span><a href="https://en.wikipedia.org/wiki/Raft_(algorithm)" target="_blank" rel="noopener"><span>RAFT Wikipedia article</span></a><span> and the </span><a href="https://en.wikipedia.org/wiki/Consensus_(computer_science)" target="_blank" rel="noopener"><span>consensus mechanism overview</span></a><span>.</span></p><h2 id="Algorithm-Description" data-id="Algorithm-Description"><a class="anchor hidden-xs" href="#Algorithm-Description" title="Algorithm-Description"><span class="octicon octicon-link"></span></a><span>Algorithm Description</span></h2><p><span>For a comprehensive specification of the RAFT algorithm, refer to this </span><a href="https://raft.github.io/raft.pdf" target="_blank" rel="noopener"><span>paper</span></a><span>. Your task is to implement a simpler version of RAFT, with modifications to accommodate educational purposes and testing.</span></p><h3 id="Node-Attributes" data-id="Node-Attributes"><a class="anchor hidden-xs" href="#Node-Attributes" title="Node-Attributes"><span class="octicon octicon-link"></span></a><span>Node Attributes</span></h3><p><span>Each node within the cluster will possess the following attributes:</span></p><ul>
+<li><strong><span>STATE</span></strong><span> (default: </span><em><span>Follower</span></em><span>): can be </span><em><span>Leader</span></em><span>, </span><em><span>Candidate</span></em><span>, or </span><em><span>Follower</span></em><span>.</span>
+<ul>
+<li><strong><span>Leader</span></strong><span>:</span>
+<ul>
+<li><span>Sends </span><code>AppendEntries</code><span> to other nodes periodically as dictated by </span><code>APPEND_ENTRIES_TIMEOUT</code><span>.</span></li>
+<li><span>Updates </span><code>UNCOMMITTED_VALUE</code><span> upon receiving </span><code>AddValue</code><span> calls (all such calls must be forwarded to the </span><em><span>Leader</span></em><span>).</span></li>
+<li><span>Commits </span><code>UNCOMMITTED_VALUE</code><span> to </span><code>COMMITTED_VALUE</code><span> once a majority agreement is reached and updates followers.</span></li>
+</ul>
+</li>
+<li><strong><span>Candidate</span></strong><span>:</span>
+<ul>
+<li><span>Initiates </span><code>RequestVote</code><span> calls to other nodes.</span></li>
+<li><span>Transitions to </span><em><span>Leader</span></em><span> upon receiving majority votes; reverts to </span><em><span>Follower</span></em><span> otherwise.</span></li>
+</ul>
+</li>
+<li><strong><span>Follower</span></strong><span>:</span>
+<ul>
+<li><span>Begins election process upon </span><code>ELECTION_TIMEOUT</code><span>, transitioning to </span><em><span>Candidate</span></em><span>.</span></li>
+<li><span>Resets its </span><code>ELECTION_TIMEOUT</code><span> upon receiving </span><code>AppendEntries</code><span>.</span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong><span>TERM</span></strong><span> (default: </span><code>0</code><span>): current term of the node, a non-negative integer.</span></li>
+<li><strong><span>VOTED</span></strong><span> (default: </span><code>False</code><span>): indicates whether the node has voted in the current term.</span></li>
+<li><strong><span>SUSPENDED</span></strong><span> (default: </span><code>False</code><span>): indicates whether the node is suspended.</span></li>
+<li><strong><span>TIMEOUT</span></strong><span>:</span>
+<ul>
+<li><strong><span>ELECTION_TIMEOUT</span></strong><span>: random float between 2.0 and 4.0 seconds.</span></li>
+<li><strong><span>APPEND_ENTRIES_TIMEOUT</span></strong><span>: 0.4 seconds.</span></li>
+</ul>
+</li>
+<li><strong><span>UNCOMMITTED_VALUE</span></strong><span> (default: </span><code>0</code><span>): most recent uncommitted value.</span></li>
+<li><strong><span>COMMITTED_VALUE</span></strong><span> (default: </span><code>0</code><span>): most recent committed value, must not exceed </span><code>UNCOMMITTED_VALUE</code><span>.</span></li>
+</ul><h3 id="Phases" data-id="Phases"><a class="anchor hidden-xs" href="#Phases" title="Phases"><span class="octicon octicon-link"></span></a><span>Phases</span></h3><ol>
+<li><strong><span>Leader Election</span></strong></li>
+<li><strong><span>Log Replication</span></strong></li>
+</ol><h3 id="Leader-Election" data-id="Leader-Election"><a class="anchor hidden-xs" href="#Leader-Election" title="Leader-Election"><span class="octicon octicon-link"></span></a><span>Leader Election</span></h3><p><span>The leader node acts as the single trusted source of information in the cluster.</span></p><h4 id="Initiation-of-leader-election" data-id="Initiation-of-leader-election"><a class="anchor hidden-xs" href="#Initiation-of-leader-election" title="Initiation-of-leader-election"><span class="octicon octicon-link"></span></a><span>Initiation of leader election</span></h4><p><em><span>Leader Election</span></em><span> is triggered under two conditions:</span></p><ol>
+<li><span>A follower node does not detect an active leader, possibly because the current leader went offline.</span></li>
+<li><span>The cluster is freshly initialized and no leader has been elected yet.</span></li>
+</ol><h4 id="Basic-election-process" data-id="Basic-election-process"><a class="anchor hidden-xs" href="#Basic-election-process" title="Basic-election-process"><span class="octicon octicon-link"></span></a><span>Basic election process</span></h4><ul>
+<li><strong><span>Node[q] State</span></strong><span>: initially a </span><em><span>Follower</span></em><span>.</span></li>
+<li><strong><span>TIMEOUT</span></strong><span>: Node[q]'s TIMEOUT expires, indicating no </span><code>AppendEntries</code><span> received within the set interval.</span></li>
+<li><strong><span>Assumption of Leader Failure</span></strong><span>: Node[q] assumes the </span><em><span>Leader</span></em><span> has gone offline.</span></li>
+<li><strong><span>Election Initiation</span></strong><span>:</span>
+<ul>
+<li><span>Node[q] advances to the next term and changes its state to </span><em><span>Candidate</span></em><span>, then votes for itself.</span></li>
+<li><span>Node[q] updates other attributes as needed (implementation-dependent).</span></li>
+<li><span>Node[q] sends </span><code>RequestVote</code><span> to other nodes and awaits responses.</span></li>
+<li><span>Upon receiving a majority of votes, Node[q] becomes the </span><em><span>Leader</span></em><span> and sets its TIMEOUT to </span><code>APPEND_ENTRIES_TIMEOUT</code><span>.</span></li>
+<li><span>Otherwise, it reinitializes itself as a </span><em><span>Follower</span></em><span>, assuming that another </span><em><span>Candidate</span></em><span> has won.</span></li>
+</ul>
+</li>
+</ul><h4 id="Interaction-between-nodes-during-election" data-id="Interaction-between-nodes-during-election"><a class="anchor hidden-xs" href="#Interaction-between-nodes-during-election" title="Interaction-between-nodes-during-election"><span class="octicon octicon-link"></span></a><span>Interaction between nodes during election</span></h4><ul>
+<li><strong><span>Node[w] State</span></strong><span>: Follower with a term, T.</span></li>
+<li><strong><span>Voting Request</span></strong><span>: Node[q] requests a vote from Node[w] with a term, U, where U &gt; T.</span></li>
+<li><strong><span>Term Update and Voting</span></strong><span>:</span>
+<ul>
+<li><span>Node[w] updates its TERM to U and votes for Node[q].</span></li>
+<li><span>Node[w] also updates its VOTED status to prevent multiple votes in the same term.</span></li>
+</ul>
+</li>
+</ul><h4 id="gRPC-functions-for-leader-election" data-id="gRPC-functions-for-leader-election"><a class="anchor hidden-xs" href="#gRPC-functions-for-leader-election" title="gRPC-functions-for-leader-election"><span class="octicon octicon-link"></span></a><span>gRPC functions for leader election</span></h4><ul>
+<li><strong><span>AppendEntries</span></strong><span>:</span>
+<ul>
+<li><span>Used by the leader to signal its presence to other nodes (heartbeat).</span></li>
+<li><span>Calls should be made using threads to manage simultaneous node communication.</span></li>
+<li><span>Nodes must restart their </span><code>ELECTION_TIMEOUT</code><span> upon receiving an </span><code>AppendEntries</code><span> call.</span></li>
+<li><span>Additional checks ensure the legitimacy of the leader’s term and ID.</span></li>
+</ul>
+</li>
+<li><strong><span>RequestVote</span></strong><span>:</span>
+<ul>
+<li><span>Candidates invoke this function to request votes.</span></li>
+<li><span>Calls should be made using threads to manage simultaneous node communication.</span></li>
+<li><span>The legitimacy of the candidate's term and eligibility for voting is verified.</span></li>
+<li><span>Nodes respond based on their current state and the term of the candidate.</span></li>
+</ul>
+</li>
+<li><strong><span>GetLeader</span></strong><span>:</span>
+<ul>
+<li><span>This client-only function fetches the current leader’s ID from any node.</span></li>
+</ul>
+</li>
+<li><strong><span>Suspend</span></strong><span>:</span>
+<ul>
+<li><span>This client-only function sets the node's SUSPEND status to </span><code>True</code><span>, halting all operations except for the Resume command.</span></li>
+</ul>
+</li>
+<li><strong><span>Resume</span></strong><span>:</span>
+<ul>
+<li><span>This client-only function resets the SUSPEND status to </span><code>False</code><span>, and reinitializing the node as a </span><em><span>Follower</span></em><span> allowing the node to resume normal operations.</span></li>
+</ul>
+</li>
+</ul><h3 id="Log-Replication-Simplified" data-id="Log-Replication-Simplified"><a class="anchor hidden-xs" href="#Log-Replication-Simplified" title="Log-Replication-Simplified"><span class="octicon octicon-link"></span></a><span>Log Replication (Simplified)</span></h3><p><span>The goal of this phase is to ensure consistency across all nodes in the cluster regarding the values they store, specifically focusing on the transition of values from uncommitted to committed states.</span></p><h4 id="Process-description" data-id="Process-description"><a class="anchor hidden-xs" href="#Process-description" title="Process-description"><span class="octicon octicon-link"></span></a><span>Process description</span></h4><ul>
+<li><strong><span>Client Updates</span></strong><span>: The client initiates an update to the values stored in the system (</span><code>UNCOMMITTED_VALUE</code><span>, </span><code>COMMITTED_VALUE</code><span>).</span></li>
+<li><strong><span>Leader Responsibilities</span></strong><span>:</span>
+<ul>
+<li><span>The leader initially marks updates as uncommitted.</span></li>
+<li><span>Once the leader confirms that a majority of the nodes have received the uncommitted update, it commits the update.</span></li>
+<li><span>Following commitment, the leader sends a commit message to other nodes, prompting them to also commit the update.</span></li>
+</ul>
+</li>
+<li><strong><span>Consistency Across Nodes</span></strong><span>: All online nodes must maintain synchronous values to ensure system consistency.</span></li>
+</ul><h4 id="gRPC-functions-for-log-replication" data-id="gRPC-functions-for-log-replication"><a class="anchor hidden-xs" href="#gRPC-functions-for-log-replication" title="gRPC-functions-for-log-replication"><span class="octicon octicon-link"></span></a><span>gRPC functions for log replication</span></h4><p><span>For effective log replication, the following RPC functions need to be implemented:</span></p><ul>
+<li><strong><span>GetValue</span></strong><span>:</span>
+<ul>
+<li><span>This client-only function retrieves the currently committed value from a node.</span></li>
+</ul>
+</li>
+<li><strong><span>AddValue</span></strong><span>:</span>
+<ul>
+<li><span>Adds a specified value </span><code>X</code><span> to the committed value, initially saving it as uncommitted.</span></li>
+<li><span>If </span><code>AddValue</code><span> is invoked on a </span><em><span>Follower</span></em><span>, the request should be relayed to the </span><em><span>Leader</span></em><span> since only the </span><em><span>Leader</span></em><span> is responsible for updating values.</span></li>
+</ul>
+</li>
+<li><strong><span>AppendEntries</span></strong><span>:</span>
+<ul>
+<li><span>While retaining its original function as a heartbeat, this function should also propagate the stored values (handling both </span><code>UNCOMMITTED_VALUE</code><span> and </span><code>COMMITTED_VALUE</code><span>) to the followers.</span></li>
+</ul>
+</li>
+</ul><h2 id="Task" data-id="Task"><a class="anchor hidden-xs" href="#Task" title="Task"><span class="octicon octicon-link"></span></a><span>Task</span></h2><ul>
+<li>
+<p><span>You are given:</span></p>
+<ul>
+<li><code>config.conf</code><span>: includes the nodes IDs and addresses (you should assume that your submission will be tested on different configs).</span></li>
+<li><code>client.py</code><span>: the client you need to accommodate.</span></li>
+<li><code>raft.proto</code><span>: gRPC proto file.</span></li>
+<li><code>test.sh</code><span>: shell script that runs all nodes at the same time.</span></li>
+<li><code>node.py</code><span>: skeleton-code of the node.</span></li>
+</ul>
+</li>
+<li>
+<p><span>You will submit:</span></p>
+<ul>
+<li><code>node.py</code><span>: your implementation of the node (similar logging to the examples is required).</span></li>
+</ul>
+</li>
+</ul><h2 id="Examples" data-id="Examples"><a class="anchor hidden-xs" href="#Examples" title="Examples"><span class="octicon octicon-link"></span></a><span>Examples</span></h2><ul>
+<li><span>For the following examples all nodes run at the same time (you can use </span><code>test.sh</code><span> to do that).</span></li>
+<li><span>Leader election can happen differently in other instances based on the randomized timeouts of the nodes. But the same functionality should be present when given relatively similar inputs. (e.g. I connect to a follower regardless of its ID after the Leader Election and do X then Y should happen)</span></li>
+</ul><h3 id="Startup" data-id="Startup"><a class="anchor hidden-xs" href="#Startup" title="Startup"><span class="octicon octicon-link"></span></a><span>Startup</span></h3><pre><code class="plain hljs">python client.py
+<span class="hljs-operator">&gt;</span> 
+</code></pre><pre><code class="plain hljs"><span class="hljs-attribute">python</span> node.py <span class="hljs-number">0</span>
+<span class="hljs-attribute">NODE</span> <span class="hljs-number">0</span> | <span class="hljs-number">127.0.0.1:50000</span>
+<span class="hljs-attribute">STATE</span>: Follower | TERM: <span class="hljs-number">0</span>
+<span class="hljs-attribute">RPC</span>[RequestVote] Invoked
+	<span class="hljs-attribute">candidate_id</span>: <span class="hljs-number">1</span>
+	<span class="hljs-attribute">candidate_term</span>: <span class="hljs-number">1</span>
+<span class="hljs-attribute">Voted</span> for NODE <span class="hljs-number">1</span>
+<span class="hljs-attribute">STATE</span>: Follower | TERM: <span class="hljs-number">1</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 1</span>
+<span class="hljs-name">NODE 1 | 127.0.0.1:50001</span>
+<span class="hljs-name">STATE: Follower | TERM: 0</span>
+<span class="hljs-name">TIMEOUT Expired | Leader Died</span>
+<span class="hljs-name">STATE: Candidate | TERM: 1</span>
+<span class="hljs-name">Voted for NODE 1</span>
+<span class="hljs-name">Votes aggregated</span>
+<span class="hljs-name">STATE: Leader | TERM: 1</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-attribute">python</span> node.py <span class="hljs-number">2</span>
+<span class="hljs-attribute">NODE</span> <span class="hljs-number">2</span> | <span class="hljs-number">127.0.0.1:50002</span>
+<span class="hljs-attribute">STATE</span>: Follower | TERM: <span class="hljs-number">0</span>
+<span class="hljs-attribute">RPC</span>[RequestVote] Invoked
+	<span class="hljs-attribute">candidate_id</span>: <span class="hljs-number">1</span>
+	<span class="hljs-attribute">candidate_term</span>: <span class="hljs-number">1</span>
+<span class="hljs-attribute">Voted</span> for NODE <span class="hljs-number">1</span>
+<span class="hljs-attribute">STATE</span>: Follower | TERM: <span class="hljs-number">1</span>
+</code></pre><h3 id="Get-Leader" data-id="Get-Leader"><a class="anchor hidden-xs" href="#Get-Leader" title="Get-Leader"><span class="octicon octicon-link"></span></a><span>Get Leader</span></h3><blockquote>
+<p><span>Assume startup already happened and Node 1 is the </span><em><span>Leader</span></em><span>.</span></p>
+</blockquote><pre><code class="plain hljs">python client.py
+<span class="hljs-operator">&gt;</span> connect <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>:<span class="hljs-number">50000</span>
+<span class="hljs-operator">&gt;</span> getleader
+GetLeader: [ LeaderID <span class="hljs-operator">=</span> <span class="hljs-number">1</span> ]
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">0</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+RPC[GetLeader] Invoked
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">1</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">2</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+</code></pre><h3 id="Suspend-Follower" data-id="Suspend-Follower"><a class="anchor hidden-xs" href="#Suspend-Follower" title="Suspend-Follower"><span class="octicon octicon-link"></span></a><span>Suspend Follower</span></h3><blockquote>
+<p><span>Assume startup already happened and Node 1 is the </span><em><span>Leader</span></em><span>.</span></p>
+</blockquote><pre><code class="plain hljs">python client.py
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">connect <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>:<span class="hljs-number">50000</span></span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">suspend</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">resume</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">suspend</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">resume</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">connect <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>:<span class="hljs-number">50002</span></span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">suspend</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">resume</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">suspend</span>
+<span class="hljs-meta">&gt;</span> <span class="language-javascript">resume</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 0</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+<span class="hljs-name">RPC[Resume] Invoked</span>
+<span class="hljs-name">STATE: Follower | TERM: 1</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+<span class="hljs-name">RPC[Resume] Invoked</span>
+<span class="hljs-name">STATE: Follower | TERM: 1</span>
+
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">1</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 2</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+<span class="hljs-name">RPC[Resume] Invoked</span>
+<span class="hljs-name">STATE: Follower | TERM: 1</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+<span class="hljs-name">RPC[Resume] Invoked</span>
+<span class="hljs-name">STATE: Follower | TERM: 1</span>
+</code></pre><h3 id="Suspend-Leader" data-id="Suspend-Leader"><a class="anchor hidden-xs" href="#Suspend-Leader" title="Suspend-Leader"><span class="octicon octicon-link"></span></a><span>Suspend Leader</span></h3><blockquote>
+<p><span>Assume startup already happened and Node 1 is the </span><em><span>Leader</span></em><span>.</span></p>
+</blockquote><pre><code class="plain hljs">python client.py
+<span class="hljs-meta">&gt; </span><span class="language-bash">connect 127.0.0.1:50001</span>
+<span class="hljs-meta">&gt; </span><span class="language-bash"><span class="hljs-built_in">suspend</span></span>
+<span class="hljs-meta"># </span><span class="language-bash"><span class="hljs-built_in">wait</span> a bit</span>
+<span class="hljs-meta">&gt; </span><span class="language-bash">resume</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-attribute">python</span> node.py <span class="hljs-number">0</span>
+<span class="hljs-section">&lt;Startup&gt;</span>
+<span class="hljs-attribute">RPC</span>[RequestVote] Invoked
+	<span class="hljs-attribute">Args</span>:
+		<span class="hljs-attribute">candidate_id</span>: <span class="hljs-number">2</span>
+		<span class="hljs-attribute">candidate_term</span>: <span class="hljs-number">2</span>
+<span class="hljs-attribute">Voted</span> for NODE <span class="hljs-number">2</span>
+<span class="hljs-attribute">STATE</span>: Follower | TERM: <span class="hljs-number">2</span>
+
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">1</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+RPC[Suspend] Invoked
+RPC[Resume] Invoked
+STATE: Follower <span class="hljs-operator">|</span> TERM: <span class="hljs-number">1</span>
+STATE: Follower <span class="hljs-operator">|</span> TERM: <span class="hljs-number">2</span>
+
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">2</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+TIMEOUT Expired <span class="hljs-operator">|</span> Leader Died
+STATE: Candidate <span class="hljs-operator">|</span> TERM: <span class="hljs-number">2</span>
+Voted <span class="hljs-keyword">for</span> NODE <span class="hljs-number">2</span>
+Votes aggregated
+STATE: Leader <span class="hljs-operator">|</span> TERM: <span class="hljs-number">2</span>
+
+</code></pre><h3 id="GetAdd-Value" data-id="GetAdd-Value"><a class="anchor hidden-xs" href="#GetAdd-Value" title="GetAdd-Value"><span class="octicon octicon-link"></span></a><span>Get/Add Value</span></h3><blockquote>
+<p><span>Assume startup already happened and Node 1 is the </span><em><span>Leader</span></em><span>.</span></p>
+</blockquote><pre><code class="plain hljs">python client.py
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">connect 127.0.0.1:50000</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 0 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">add 2</span>
+<span class="hljs-comment"># Wait a bit to make sure the changes are propagated</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get   </span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 2 ]</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 0</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 2
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">1</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+RPC[AddValue] Invoked
+    value_to_add: <span class="hljs-number">2</span>
+</code></pre><pre><code class="plain hljs">python node.py <span class="hljs-number">2</span>
+<span class="hljs-operator">&lt;</span>Startup<span class="hljs-operator">&gt;</span>
+
+</code></pre><h3 id="GetAdd-Value-uncommitted-case" data-id="GetAdd-Value-uncommitted-case"><a class="anchor hidden-xs" href="#GetAdd-Value-uncommitted-case" title="GetAdd-Value-uncommitted-case"><span class="octicon octicon-link"></span></a><span>Get/Add Value (uncommitted case)</span></h3><blockquote>
+<p><span>Assume startup already happened and Node 1 is the </span><em><span>Leader</span></em><span>.</span></p>
+</blockquote><pre><code class="plain hljs">python client.py
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">connect 127.0.0.1:50000</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 0 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">add 2</span>
+<span class="hljs-comment"># Wait a bit to make sure the changes are propagated</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get   </span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 2 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">suspend</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">connect 127.0.0.1:50002</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 2 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">add 1</span>
+<span class="hljs-comment"># Wait a bit to make sure the changes are propagated</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 3 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">suspend</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">connect 127.0.0.1:50001</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 3 ]</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">add 3</span>
+<span class="hljs-comment"># Wait a bit to make sure the changes are propagated</span>
+<span class="hljs-punctuation">&gt;</span> <span class="hljs-string">get</span>
+<span class="hljs-attribute">Get</span><span class="hljs-punctuation">:</span> <span class="hljs-string">[ Value = 3 ]</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 0</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 2
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 1</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 2
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 1
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 3
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+</code></pre><pre><code class="plain hljs"><span class="hljs-name">python node.py 2</span>
+<span class="hljs-name">&lt;Startup&gt;</span>
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[AddValue] Invoked</span>
+    value_to_add: 1
+<span class="hljs-name">RPC[GetValue] Invoked</span>
+<span class="hljs-name">RPC[Suspend] Invoked</span>
+</code></pre><h2 id="Checklist" data-id="Checklist"><a class="anchor hidden-xs" href="#Checklist" title="Checklist"><span class="octicon octicon-link"></span></a><span>Checklist</span></h2><h3 id="Base-requirements" data-id="Base-requirements"><a class="anchor hidden-xs" href="#Base-requirements" title="Base-requirements"><span class="octicon octicon-link"></span></a><span>Base requirements</span></h3><blockquote>
+<p><span>❗️ Not meeting them will result in assignment failure (instant 0 points).</span></p>
+</blockquote><ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> A single submitted file (</span><code>node.py</code><span>).</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> The solution should work on a VM instance (Ubuntu 22.04, 4 CPU-cores, 8GB RAM).</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> The code is readable and does not use any external dependencies.</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Logging shows all major system events in detail (check examples above).</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> The system is resilient to random testing (nodes may go online or offline any time).</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> The source code is the author's original work. Both parties will be penalized for detected plagiarism.</span></li>
+</ul><h3 id="Partial-points-requirements" data-id="Partial-points-requirements"><a class="anchor hidden-xs" href="#Partial-points-requirements" title="Partial-points-requirements"><span class="octicon octicon-link"></span></a><span>Partial points requirements</span></h3><ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Leader election requirements (weights 60%):</span></p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Startup example</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Get Leader example</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Suspend Follower example</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Suspend Leader example</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Your solution should also be able to handle split vote scenarios</span></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Log replication requirements (weights 40%):</span></p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Get/Add Value example</span></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" type="checkbox" disabled="disabled"><span> Get/Add Value uncommitted case example</span></li>
+</ul>
+</li>
+</ul><h2 id="Important-Notes" data-id="Important-Notes"><a class="anchor hidden-xs" href="#Important-Notes" title="Important-Notes"><span class="octicon octicon-link"></span></a><span>Important Notes</span></h2><ul>
+<li><span>The main goal of the assignment is to check your understanding of componenets used in RAFT.</span></li>
+<li><span>Partial point criteria is not finalized, TAs can adjust the criteria.</span></li>
+<li><span>You can assume that for the most part we will not stress-test your solution, our goal is to make sure you understand RAFT and that you can roughly implement similar algorithms. However TAs can do additional testing if they suspect that a specific functionality is not implemented correctly.</span></li>
+<li><span>There are functionalities that deviate from the theoretical RAFT algorithm to simplify the task for the students.</span></li>
+<li><span>You are expected to follow all requirements in this task because testing will be automated (this applies to all functionalities that do not conform with the theoretical algorithm for RAFT, such as having suspended nodes instantly become followers once they are resumed).</span></li>
+<li><span>No mistakes in base requirements will be tolerated in this assignment. This is the 6th one, so you should've already be familiar with the submission process. Such mistakes include but are not limited to:</span>
+<ul>
+<li><span>Submitting the wrong files (yes, even if you show the TA that the last modification time is a week ago on your machine).</span></li>
+<li><span>Submitting in the wrong format (you are required to submit only the </span><code>node.py</code><span> file).</span></li>
+<li><span>Submitting a solution that doesn't work with the provided </span><code>client.py</code><span> or </span><code>raft.proto</code><span>.</span></li>
+<li><span>Any form of plagiarism; if the TA is sure that someone has plagiarized they will instantly get 0 (yes, even if the student can explain their code).</span></li>
+</ul>
+</li>
+</ul></div>
+    <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
+        <div class="pull-right dropdown">
+            <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
+                <i class="fa fa-bars"></i>
+            </a>
+            <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+                <div class="toc"><ul class="nav">
+<li class=""><a href="#Week-6---Distributed-Consensus" title="Week 6 - Distributed Consensus">Week 6 - Distributed Consensus</a><ul class="nav">
+<li><a href="#Overview" title="Overview">Overview</a></li>
+<li><a href="#Algorithm-Description" title="Algorithm Description">Algorithm Description</a><ul class="nav">
+<li><a href="#Node-Attributes" title="Node Attributes">Node Attributes</a></li>
+<li><a href="#Phases" title="Phases">Phases</a></li>
+<li><a href="#Leader-Election" title="Leader Election">Leader Election</a></li>
+<li><a href="#Log-Replication-Simplified" title="Log Replication (Simplified)">Log Replication (Simplified)</a></li>
+</ul>
+</li>
+<li><a href="#Task" title="Task">Task</a></li>
+<li><a href="#Examples" title="Examples">Examples</a><ul class="nav">
+<li><a href="#Startup" title="Startup">Startup</a></li>
+<li><a href="#Get-Leader" title="Get Leader">Get Leader</a></li>
+<li><a href="#Suspend-Follower" title="Suspend Follower">Suspend Follower</a></li>
+<li><a href="#Suspend-Leader" title="Suspend Leader">Suspend Leader</a></li>
+<li><a href="#GetAdd-Value" title="Get/Add Value">Get/Add Value</a></li>
+<li><a href="#GetAdd-Value-uncommitted-case" title="Get/Add Value (uncommitted case)">Get/Add Value (uncommitted case)</a></li>
+</ul>
+</li>
+<li><a href="#Checklist" title="Checklist">Checklist</a><ul class="nav">
+<li><a href="#Base-requirements" title="Base requirements">Base requirements</a></li>
+<li><a href="#Partial-points-requirements" title="Partial points requirements">Partial points requirements</a></li>
+</ul>
+</li>
+<li class=""><a href="#Important-Notes" title="Important Notes">Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</div><div class="toc-menu"><a class="expand-toggle" href="#">Expand all</a><a class="back-to-top" href="#">Back to top</a><a class="go-to-bottom" href="#">Go to bottom</a></div>
+            </ul>
+        </div>
+    </div>
+    <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="top:17px;display:none;"  >
+        <div class="toc"><ul class="nav">
+<li class=""><a href="#Week-6---Distributed-Consensus" title="Week 6 - Distributed Consensus">Week 6 - Distributed Consensus</a><ul class="nav">
+<li><a href="#Overview" title="Overview">Overview</a></li>
+<li><a href="#Algorithm-Description" title="Algorithm Description">Algorithm Description</a><ul class="nav">
+<li><a href="#Node-Attributes" title="Node Attributes">Node Attributes</a></li>
+<li><a href="#Phases" title="Phases">Phases</a></li>
+<li><a href="#Leader-Election" title="Leader Election">Leader Election</a></li>
+<li><a href="#Log-Replication-Simplified" title="Log Replication (Simplified)">Log Replication (Simplified)</a></li>
+</ul>
+</li>
+<li><a href="#Task" title="Task">Task</a></li>
+<li><a href="#Examples" title="Examples">Examples</a><ul class="nav">
+<li><a href="#Startup" title="Startup">Startup</a></li>
+<li><a href="#Get-Leader" title="Get Leader">Get Leader</a></li>
+<li><a href="#Suspend-Follower" title="Suspend Follower">Suspend Follower</a></li>
+<li><a href="#Suspend-Leader" title="Suspend Leader">Suspend Leader</a></li>
+<li><a href="#GetAdd-Value" title="Get/Add Value">Get/Add Value</a></li>
+<li><a href="#GetAdd-Value-uncommitted-case" title="Get/Add Value (uncommitted case)">Get/Add Value (uncommitted case)</a></li>
+</ul>
+</li>
+<li><a href="#Checklist" title="Checklist">Checklist</a><ul class="nav">
+<li><a href="#Base-requirements" title="Base requirements">Base requirements</a></li>
+<li><a href="#Partial-points-requirements" title="Partial points requirements">Partial points requirements</a></li>
+</ul>
+</li>
+<li class=""><a href="#Important-Notes" title="Important Notes">Important Notes</a></li>
+</ul>
+</li>
+</ul>
+</div><div class="toc-menu"><a class="expand-toggle" href="#">Expand all</a><a class="back-to-top" href="#">Back to top</a><a class="go-to-bottom" href="#">Go to bottom</a></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gist-embed/2.6.0/gist-embed.min.js" integrity="sha256-KyF2D6xPIJUW5sUDSs93vWyZm+1RzIpKCexxElmxl8g=" crossorigin="anonymous" defer></script>
+    <script>
+        var markdown = $(".markdown-body");
+        //smooth all hash trigger scrolling
+        function smoothHashScroll() {
+            var hashElements = $("a[href^='#']").toArray();
+            for (var i = 0; i < hashElements.length; i++) {
+                var element = hashElements[i];
+                var $element = $(element);
+                var hash = element.hash;
+                if (hash) {
+                    $element.on('click', function (e) {
+                        // store hash
+                        var hash = this.hash;
+                        if ($(hash).length <= 0) return;
+                        // prevent default anchor click behavior
+                        e.preventDefault();
+                        // animate
+                        $('body, html').stop(true, true).animate({
+                            scrollTop: $(hash).offset().top
+                        }, 100, "linear", function () {
+                            // when done, add hash to url
+                            // (default click behaviour)
+                            window.location.hash = hash;
+                        });
+                    });
+                }
+            }
+        }
+
+        smoothHashScroll();
+        var toc = $('.ui-toc');
+        var tocAffix = $('.ui-affix-toc');
+        var tocDropdown = $('.ui-toc-dropdown');
+        //toc
+        tocDropdown.click(function (e) {
+            e.stopPropagation();
+        });
+
+        var enoughForAffixToc = true;
+
+        function generateScrollspy() {
+            $(document.body).scrollspy({
+                target: ''
+            });
+            $(document.body).scrollspy('refresh');
+            if (enoughForAffixToc) {
+                toc.hide();
+                tocAffix.show();
+            } else {
+                tocAffix.hide();
+                toc.show();
+            }
+            $(document.body).scroll();
+        }
+
+        function windowResize() {
+            //toc right
+            var paddingRight = parseFloat(markdown.css('padding-right'));
+            var right = ($(window).width() - (markdown.offset().left + markdown.outerWidth() - paddingRight));
+            toc.css('right', right + 'px');
+            //affix toc left
+            var newbool;
+            var rightMargin = (markdown.parent().outerWidth() - markdown.outerWidth()) / 2;
+            //for ipad or wider device
+            if (rightMargin >= 133) {
+                newbool = true;
+                var affixLeftMargin = (tocAffix.outerWidth() - tocAffix.width()) / 2;
+                var left = markdown.offset().left + markdown.outerWidth() - affixLeftMargin;
+                tocAffix.css('left', left + 'px');
+            } else {
+                newbool = false;
+            }
+            if (newbool != enoughForAffixToc) {
+                enoughForAffixToc = newbool;
+                generateScrollspy();
+            }
+        }
+        $(window).resize(function () {
+            windowResize();
+        });
+        $(document).ready(function () {
+            windowResize();
+            generateScrollspy();
+        });
+
+        //remove hash
+        function removeHash() {
+            window.location.hash = '';
+        }
+
+        var backtotop = $('.back-to-top');
+        var gotobottom = $('.go-to-bottom');
+
+        backtotop.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (scrollToTop)
+                scrollToTop();
+            removeHash();
+        });
+        gotobottom.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (scrollToBottom)
+                scrollToBottom();
+            removeHash();
+        });
+
+        var toggle = $('.expand-toggle');
+        var tocExpand = false;
+
+        checkExpandToggle();
+        toggle.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            tocExpand = !tocExpand;
+            checkExpandToggle();
+        })
+
+        function checkExpandToggle () {
+            var toc = $('.ui-toc-dropdown .toc');
+            var toggle = $('.expand-toggle');
+            if (!tocExpand) {
+                toc.removeClass('expand');
+                toggle.text('Expand all');
+            } else {
+                toc.addClass('expand');
+                toggle.text('Collapse all');
+            }
+        }
+
+        function scrollToTop() {
+            $('body, html').stop(true, true).animate({
+                scrollTop: 0
+            }, 100, "linear");
+        }
+
+        function scrollToBottom() {
+            $('body, html').stop(true, true).animate({
+                scrollTop: $(document.body)[0].scrollHeight
+            }, 100, "linear");
+        }
+    </script>
+</body>
+
+</html>

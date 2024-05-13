@@ -1,0 +1,11 @@
+python3 client.py 127.0.0.1:8080 note1.txt &
+python3 client.py 127.0.0.1:8080 note2.txt &
+python3 client.py 127.0.0.1:8080 note2.txt &
+python3 client.py 127.0.0.1:8080 note4.txt &
+python3 client.py 127.0.0.1:8080 note5.txt &
+python3 client.py 127.0.0.1:8080 note6.txt &
+python3 client.py 127.0.0.1:8080 note7.txt &
+python3 client.py 127.0.0.1:8080 note8.txt &
+python3 client.py 127.0.0.1:8080 note9.txt &
+python3 client.py 127.0.0.1:8080 note10.txt &
+python3 client.py 127.0.0.1:8080 note11.txt &
